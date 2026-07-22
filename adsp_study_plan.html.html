@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#FBF9F4">
+<title>ADsP 학습 채점표</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF9F4;
+    --paper-alt:#F5F1E9;
+    --omr-line:#E7B8AE;
+    --omr-line-soft:#F0D8D2;
+    --graphite:#2B2723;
+    --graphite-soft:#6B6459;
+    --pen-red:#B5382A;
+    --pen-red-soft:#D98A7C;
+    --lead-blue:#33507A;
+    --lead-blue-soft:#7C93B5;
+    --pass-line:#2E7D5B;
+    --card-border:#DDD5C7;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, var(--omr-line-soft) 27px, var(--omr-line-soft) 28px),
+      var(--paper);
+    color:var(--graphite);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    min-height:100vh;
+    padding-bottom:80px;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  .serif{ font-family:'Noto Serif KR', serif; }
+
+  /* ---------- HEADER ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:var(--paper);
+    border-bottom:2px solid var(--graphite);
+    box-shadow:0 2px 0 var(--omr-line);
+  }
+  .header-inner{
+    max-width:760px; margin:0 auto; padding:18px 20px 14px;
+  }
+  .exam-title-row{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;
+  }
+  .exam-eyebrow{
+    font-size:11px; letter-spacing:0.18em; color:var(--pen-red);
+    font-family:'IBM Plex Mono', monospace; font-weight:600;
+    border:1px solid var(--pen-red); display:inline-block;
+    padding:2px 7px; border-radius:2px; margin-bottom:6px;
+  }
+  .exam-title{
+    font-family:'Noto Serif KR', serif; font-weight:900;
+    font-size:22px; line-height:1.3; margin:0;
+    letter-spacing:-0.01em;
+  }
+  .dday-box{
+    text-align:right; flex-shrink:0;
+  }
+  .dday-label{
+    font-size:11px; color:var(--graphite-soft); letter-spacing:0.1em;
+  }
+  .dday-num{
+    font-family:'IBM Plex Mono', monospace; font-weight:700;
+    font-size:32px; color:var(--pen-red); line-height:1;
+  }
+
+  .score-panel{
+    margin-top:16px; border:1.5px solid var(--graphite);
+    background:#fff; border-radius:3px; padding:12px 14px;
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  }
+  .score-num-wrap{
+    display:flex; align-items:baseline; gap:4px; flex-shrink:0;
+  }
+  .score-num{
+    font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:26px;
+    color:var(--lead-blue);
+  }
+  .score-total{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--graphite-soft);
+  }
+  .score-track{
+    flex:1; min-width:140px; height:10px; background:var(--paper-alt);
+    border:1px solid var(--card-border); border-radius:5px; overflow:hidden; position:relative;
+  }
+  .score-fill{
+    height:100%; background:linear-gradient(90deg, var(--lead-blue-soft), var(--lead-blue));
+    width:0%; transition:width 0.4s ease;
+  }
+  .pass-marker{
+    position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--pass-line);
+    left:60%;
+  }
+  .score-caption{
+    font-size:11px; color:var(--graphite-soft); flex-basis:100%;
+  }
+  .score-caption b{ color:var(--pass-line); }
+
+  /* ---------- WEEK SECTION ---------- */
+  main{ max-width:760px; margin:0 auto; padding:22px 20px 0; }
+  .week-divider{
+    display:flex; align-items:center; gap:10px; margin:34px 0 14px;
+  }
+  .week-divider:first-child{ margin-top:8px; }
+  .week-tag{
+    font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:13px;
+    color:#fff; background:var(--graphite); padding:4px 10px; border-radius:2px;
+    letter-spacing:0.05em; flex-shrink:0;
+  }
+  .week-title{
+    font-family:'Noto Serif KR', serif; font-weight:700; font-size:16px; flex-shrink:0;
+  }
+  .week-rule{ flex:1; height:1px; background:repeating-linear-gradient(90deg, var(--graphite) 0, var(--graphite) 4px, transparent 4px, transparent 8px); }
+
+  /* ---------- DAY CARD ---------- */
+  .day-card{
+    background:#fff; border:1.5px solid var(--card-border);
+    border-left:4px solid var(--lead-blue-soft);
+    border-radius:3px; margin-bottom:12px; overflow:hidden;
+    transition:border-left-color 0.3s ease;
+  }
+  .day-card.done{ border-left-color:var(--pass-line); }
+  .day-card.today{ box-shadow:0 0 0 2px var(--pen-red-soft) inset; }
+
+  .day-head{
+    display:flex; align-items:center; gap:12px;
+    padding:10px 14px; cursor:pointer; user-select:none;
+    background:var(--paper-alt);
+  }
+  .day-date{
+    font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:13px;
+    color:var(--graphite); width:78px; flex-shrink:0;
+  }
+  .day-date .dow{ color:var(--graphite-soft); font-weight:400; margin-left:2px; }
+  .day-badge{
+    font-family:'IBM Plex Mono', monospace; font-size:10px; font-weight:600;
+    padding:2px 7px; border-radius:10px; flex-shrink:0;
+    border:1px solid var(--lead-blue-soft); color:var(--lead-blue);
+  }
+  .day-badge.weekend{ border-color:var(--pen-red-soft); color:var(--pen-red); }
+  .day-topic{
+    font-size:13.5px; font-weight:500; flex:1; min-width:0;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .today-flag{
+    font-family:'IBM Plex Mono', monospace; font-size:10px; font-weight:700;
+    color:var(--pen-red); flex-shrink:0;
+  }
+  .day-progress-mini{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--graphite-soft);
+    flex-shrink:0;
+  }
+  .chevron{
+    width:10px; height:10px; border-right:2px solid var(--graphite-soft); border-bottom:2px solid var(--graphite-soft);
+    transform:rotate(45deg); transition:transform 0.25s ease; flex-shrink:0; margin-right:2px;
+  }
+  .day-card.collapsed .chevron{ transform:rotate(-45deg); }
+
+  .day-body{
+    padding:12px 14px 14px 14px;
+    max-height:1000px; overflow:hidden; transition:max-height 0.3s ease, padding 0.3s ease;
+  }
+  .day-card.collapsed .day-body{
+    max-height:0; padding-top:0; padding-bottom:0;
+  }
+
+  .task-row{
+    display:flex; align-items:flex-start; gap:10px;
+    padding:7px 4px; border-bottom:1px dashed var(--omr-line-soft);
+  }
+  .task-row:last-child{ border-bottom:none; }
+
+  .omr-bubble{
+    width:20px; height:20px; border-radius:50%; border:2px solid var(--graphite);
+    flex-shrink:0; margin-top:1px; cursor:pointer; position:relative;
+    background:#fff; transition:all 0.15s ease;
+    -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+  }
+  .task-label{ -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+  .day-head{ -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+  .omr-bubble:hover{ border-color:var(--pen-red); }
+  .omr-bubble.checked{
+    background:var(--pen-red); border-color:var(--pen-red);
+  }
+  .omr-bubble.checked::after{
+    content:''; position:absolute; left:5px; top:2px; width:5px; height:9px;
+    border-right:2.5px solid #fff; border-bottom:2.5px solid #fff;
+    transform:rotate(40deg);
+  }
+  .task-label{
+    font-size:13.5px; line-height:1.5; cursor:pointer; padding-top:1px;
+  }
+  .task-row.checked .task-label{
+    color:var(--graphite-soft); text-decoration:line-through; text-decoration-color:var(--omr-line);
+  }
+
+  /* exam day special card */
+  .examday{
+    background:var(--graphite); color:var(--paper);
+    border:none; text-align:center; padding:22px 14px;
+  }
+  .examday .serif{ font-size:18px; font-weight:700; }
+  .examday .mono{ color:var(--pen-red-soft); font-size:13px; margin-top:4px; display:block; }
+
+  footer{
+    max-width:760px; margin:30px auto 0; padding:14px 20px 0;
+    font-size:11px; color:var(--graphite-soft); text-align:center;
+    border-top:1px dashed var(--omr-line);
+  }
+  footer button{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; background:none; border:1px solid var(--card-border);
+    color:var(--graphite-soft); padding:4px 10px; border-radius:3px; cursor:pointer; margin-top:10px;
+  }
+  footer button:hover{ border-color:var(--pen-red); color:var(--pen-red); }
+
+  @media (max-width:600px){
+    body{ padding-bottom:60px; }
+    .header-inner{ padding:14px 14px 12px; }
+    .exam-title{ font-size:17px; }
+    .exam-eyebrow{ font-size:10px; }
+    .dday-num{ font-size:24px; }
+    .dday-label{ font-size:10px; }
+    .score-panel{ padding:10px 12px; gap:10px; }
+    .score-num{ font-size:22px; }
+    main{ padding:16px 12px 0; }
+    .week-divider{ margin:26px 0 10px; flex-wrap:wrap; }
+    .week-title{ font-size:14px; }
+    .day-head{
+      flex-wrap:wrap; padding:12px; row-gap:6px; align-items:center;
+    }
+    .day-date{ width:auto; order:1; font-size:13px; }
+    .day-badge{ order:2; }
+    .today-flag{ order:3; margin-left:auto; }
+    .chevron{ order:4; }
+    .day-topic{
+      white-space:normal; order:5; flex-basis:100%; font-size:13px;
+      margin-top:2px;
+    }
+    .day-progress-mini{ order:2; margin-left:auto; }
+    .day-body{ padding:10px 12px 12px; }
+    .task-row{ padding:10px 2px; gap:12px; }
+    .omr-bubble{
+      width:26px; height:26px; min-width:26px;
+    }
+    .omr-bubble.checked::after{ left:7px; top:3px; width:6px; height:11px; }
+    .task-label{ font-size:14px; line-height:1.55; }
+    footer{ padding:12px 14px 0; margin-top:22px; }
+  }
+
+  @media (max-width:360px){
+    .exam-title{ font-size:15.5px; }
+    .dday-num{ font-size:21px; }
+  }
+
+  /* ---------- SYNC ---------- */
+  .sync-badge{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'IBM Plex Mono', monospace; font-size:11px;
+    color:var(--lead-blue); background:#fff; border:1px solid var(--lead-blue-soft);
+    padding:3px 8px 3px 8px; border-radius:12px; margin-top:8px; cursor:pointer;
+  }
+  .sync-badge .dot{ width:6px; height:6px; border-radius:50%; background:var(--pass-line); flex-shrink:0; }
+  .sync-badge.offline .dot{ background:var(--pen-red); }
+  .sync-badge.nosync .dot{ background:var(--graphite-soft); }
+
+  .sync-overlay{
+    position:fixed; inset:0; background:rgba(43,39,35,0.72); z-index:200;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .sync-overlay.hidden{ display:none; }
+  .sync-modal{
+    background:var(--paper); border:1.5px solid var(--graphite); border-radius:4px;
+    max-width:380px; width:100%; padding:22px; box-shadow:0 8px 30px rgba(0,0,0,0.3);
+  }
+  .sync-modal h2{ font-family:'Noto Serif KR',serif; font-size:17px; margin:0 0 6px; }
+  .sync-modal p{ font-size:12.5px; color:var(--graphite-soft); line-height:1.6; margin:0 0 16px; }
+  .sync-tabs{ display:flex; gap:6px; margin-bottom:14px; }
+  .sync-tab{
+    flex:1; text-align:center; padding:8px; font-size:12.5px; font-weight:600;
+    border:1.5px solid var(--card-border); border-radius:3px; cursor:pointer; background:#fff;
+  }
+  .sync-tab.active{ border-color:var(--lead-blue); color:var(--lead-blue); background:var(--paper-alt); }
+  .sync-panel{ display:none; }
+  .sync-panel.active{ display:block; }
+  .sync-code-display{
+    font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:700; letter-spacing:0.1em;
+    text-align:center; background:var(--paper-alt); border:1.5px dashed var(--omr-line);
+    padding:14px; border-radius:4px; margin-bottom:12px; color:var(--pen-red);
+  }
+  .sync-input{
+    width:100%; font-family:'IBM Plex Mono',monospace; font-size:18px; text-align:center;
+    letter-spacing:0.1em; padding:10px; border:1.5px solid var(--card-border); border-radius:3px;
+    margin-bottom:12px; text-transform:uppercase;
+  }
+  .sync-btn{
+    width:100%; padding:10px; font-family:'IBM Plex Sans KR',sans-serif; font-weight:600; font-size:13.5px;
+    background:var(--graphite); color:#fff; border:none; border-radius:3px; cursor:pointer;
+  }
+  .sync-btn:hover{ background:var(--pen-red); }
+  .sync-btn.secondary{ background:none; color:var(--graphite-soft); border:1px solid var(--card-border); margin-top:8px; }
+  .sync-status-msg{ font-size:11px; text-align:center; margin-top:10px; color:var(--graphite-soft); min-height:14px; }
+  .sync-close{
+    display:block; text-align:center; font-size:11.5px; color:var(--graphite-soft);
+    margin-top:14px; cursor:pointer; text-decoration:underline;
+  }
+</style>
+</head>
+<body>
+
+<div class="sync-overlay hidden" id="syncOverlay">
+  <div class="sync-modal">
+    <h2 class="serif">PC ↔ 모바일 동기화</h2>
+    <p>같은 코드를 두 기기에 입력하면 체크 데이터가 자동으로 연결돼요. 코드는 비밀번호처럼 아무에게도 공유하지 마세요.</p>
+    <div class="sync-tabs">
+      <div class="sync-tab active" id="tabNew">새 코드 만들기</div>
+      <div class="sync-tab" id="tabExisting">기존 코드 입력</div>
+    </div>
+    <div class="sync-panel active" id="panelNew">
+      <div class="sync-code-display" id="newCodeDisplay">------</div>
+      <button class="sync-btn" id="confirmNewCode">이 코드로 시작하기</button>
+      <div class="sync-status-msg">이 코드를 다른 기기(폰/PC)에도 똑같이 입력하세요</div>
+    </div>
+    <div class="sync-panel" id="panelExisting">
+      <input class="sync-input" id="existingCodeInput" placeholder="예: A3F9K2" maxlength="8">
+      <button class="sync-btn" id="confirmExistingCode">이 코드로 연결하기</button>
+      <div class="sync-status-msg" id="existingStatusMsg"></div>
+    </div>
+    <div class="sync-close" id="syncSkip">나중에 하기 (기기별 개별 저장)</div>
+  </div>
+</div>
+
+<header>
+  <div class="header-inner">
+    <div class="exam-title-row">
+      <div>
+        <span class="exam-eyebrow">STUDY OMR · 자기 채점표</span>
+        <h1 class="exam-title">ADsP 데이터분석<br>준전문가 학습 계획</h1>
+      </div>
+      <div class="dday-box">
+        <div class="dday-label mono">시험일 2026.08.08</div>
+        <div class="dday-num" id="ddayNum">D-17</div>
+        <div class="sync-badge nosync" id="syncBadge"><span class="dot"></span><span id="syncBadgeText">동기화 설정</span></div>
+      </div>
+    </div>
+    <div class="score-panel">
+      <div class="score-num-wrap">
+        <span class="score-num mono" id="scorePct">0</span><span class="score-total mono">%</span>
+      </div>
+      <div class="score-track">
+        <div class="score-fill" id="scoreFill"></div>
+        <div class="pass-marker"></div>
+      </div>
+      <div class="score-caption mono">완료 <span id="doneCount">0</span> / <span id="totalCount">0</span> &nbsp;·&nbsp; <b>기준선 60%</b> 지점 표시</div>
+    </div>
+  </div>
+</header>
+
+<main id="mainContent"></main>
+
+<footer>
+  ADsP 3과목(데이터분석) 재응시 대비 · 통계학 → 데이터마이닝 → 마무리 총정리 순서<br>
+  <button id="resetBtn">전체 체크 초기화</button>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, doc, getDoc, setDoc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ============================================================
+// 1) 아래 firebaseConfig를 본인의 Firebase 프로젝트 값으로 교체하세요.
+//    Firebase 콘솔 > 프로젝트 설정 > 내 앱 > SDK 설정 및 구성 에서 복사
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCyhqB7EItwNuVETaUrYwPjwr8WT7w44xU",
+  authDomain: "adsp-b0616.firebaseapp.com",
+  projectId: "adsp-b0616",
+  storageBucket: "adsp-b0616.firebasestorage.app",
+  messagingSenderId: "106819649331",
+  appId: "1:106819649331:web:4b25ce2189a37249050846"
+};
+
+let app = null, db = null, firebaseReady = false;
+try{
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  firebaseReady = true;
+}catch(e){
+  console.warn("Firebase 초기화 실패 - firebaseConfig를 채워주세요.", e);
+}
+
+const PLAN = [
+  {
+    week: "1주차", title: "통계학 집중", days: [
+      { date:"2026-07-22", label:"7/22", dow:"수", type:"weekday", topic:"기술통계", tasks:[
+        "평균 · 중앙값 · 최빈값 개념 정리",
+        "분산 · 표준편차 공식 (n vs n-1) 정리",
+        "왜도 · 첨도, 이상치(IQR) 개념 정리",
+        "기출 5문제 풀이"
+      ]},
+      { date:"2026-07-23", label:"7/23", dow:"목", type:"weekday", topic:"확률분포", tasks:[
+        "정규분포 특징 정리",
+        "t분포 · 카이제곱분포 · F분포 정리",
+        "기출 5문제 풀이"
+      ]},
+      { date:"2026-07-24", label:"7/24", dow:"금", type:"weekday", topic:"표본추출 · 추정", tasks:[
+        "표본추출 방법(단순/층화/군집) 정리",
+        "점추정 vs 구간추정 개념 정리",
+        "기출 5문제 풀이"
+      ]},
+      { date:"2026-07-25", label:"7/25", dow:"토", type:"weekend", topic:"가설검정 + 상관·회귀 + 기출집중", tasks:[
+        "가설검정(귀무/대립, 유의수준, p-value) 개념",
+        "상관분석 · 단순/다중 회귀분석 개념",
+        "기출문제 20~30문제 집중 풀이"
+      ]},
+      { date:"2026-07-26", label:"7/26", dow:"일", type:"weekend", topic:"ANOVA·시계열 + 통계 총정리", tasks:[
+        "분산분석(ANOVA), 시계열분석 기초 정리",
+        "통계 전체 개념 총정리",
+        "오답노트 작성 및 정리"
+      ]},
+      { date:"2026-07-27", label:"7/27", dow:"월", type:"weekday", topic:"오답노트 재복습", tasks:[
+        "오답노트 기반 취약 개념 다시 보기",
+        "헷갈렸던 공식 손으로 다시 써보기"
+      ]},
+      { date:"2026-07-28", label:"7/28", dow:"화", type:"weekday", topic:"통계 미니 모의고사", tasks:[
+        "통계 미니 모의고사 10~15문제 (시간 재기)",
+        "틀린 문제 원인 분석"
+      ]},
+    ]
+  },
+  {
+    week: "2주차", title: "데이터마이닝 집중", days: [
+      { date:"2026-07-29", label:"7/29", dow:"수", type:"weekday", topic:"데이터마이닝 개념 · CRISP-DM", tasks:[
+        "데이터마이닝 정의 · 프로세스(CRISP-DM) 정리",
+        "기출 5문제 풀이"
+      ]},
+      { date:"2026-07-30", label:"7/30", dow:"목", type:"weekday", topic:"분류분석 - 의사결정나무", tasks:[
+        "의사결정나무 개념, 엔트로피 · 지니지수 정리",
+        "기출 5문제 풀이"
+      ]},
+      { date:"2026-07-31", label:"7/31", dow:"금", type:"weekday", topic:"분류분석 - 로지스틱회귀 · 인공신경망", tasks:[
+        "로지스틱회귀 개념 정리",
+        "인공신경망 기본 구조 정리",
+        "기출 5문제 풀이"
+      ]},
+      { date:"2026-08-01", label:"8/1", dow:"토", type:"weekend", topic:"앙상블 · kNN + 군집분석", tasks:[
+        "앙상블(배깅/부스팅/랜덤포레스트) 개념",
+        "나이브베이즈, kNN 개념",
+        "군집분석(k-means, 계층적 군집) 개념 + 문제풀이"
+      ]},
+      { date:"2026-08-02", label:"8/2", dow:"일", type:"weekend", topic:"연관분석 · PCA + 데이터마이닝 총정리", tasks:[
+        "연관분석(지지도/신뢰도/향상도) 계산 연습",
+        "주성분분석(PCA) 개념 정리",
+        "데이터마이닝 전체 총정리 및 기출 집중 풀이"
+      ]},
+      { date:"2026-08-03", label:"8/3", dow:"월", type:"weekday", topic:"오답노트 재복습", tasks:[
+        "오답노트 기반 취약 개념 다시 보기",
+        "연관분석 계산 다시 연습"
+      ]},
+      { date:"2026-08-04", label:"8/4", dow:"화", type:"weekday", topic:"데이터마이닝 미니 모의고사", tasks:[
+        "미니 모의고사 10~15문제 (시간 재기)",
+        "틀린 문제 원인 분석"
+      ]},
+    ]
+  },
+  {
+    week: "3주차", title: "마무리 & 실전 감각", days: [
+      { date:"2026-08-05", label:"8/5", dow:"수", type:"weekday", topic:"3과목 실전 모의고사", tasks:[
+        "통계+데이터마이닝 섞은 실전 모의고사 1회",
+        "오답 정리"
+      ]},
+      { date:"2026-08-06", label:"8/6", dow:"목", type:"weekday", topic:"1·2과목 속성 복습", tasks:[
+        "데이터 이해(1과목) 핵심 개념 훑기",
+        "데이터분석 기획(2과목) 핵심 개념 훑기"
+      ]},
+      { date:"2026-08-07", label:"8/7", dow:"금", type:"weekday", topic:"최종 점검", tasks:[
+        "전체 오답노트 최종 확인",
+        "헷갈리는 용어 마지막 점검"
+      ]},
+    ]
+  }
+];
+
+let checkState = {};
+
+function allTaskIds(){
+  const ids = [];
+  PLAN.forEach(w => w.days.forEach(d => d.tasks.forEach((t,i) => ids.push(d.date+"_"+i))));
+  return ids;
+}
+
+function computeDday(){
+  const target = new Date("2026-08-08T00:00:00");
+  const today = new Date("2026-07-22T00:00:00"); // fallback if Date parsing issues
+  const now = new Date();
+  const cmpDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diffMs = target - cmpDate;
+  const diffDays = Math.round(diffMs / (1000*60*60*24));
+  const el = document.getElementById('ddayNum');
+  if(diffDays > 0) el.textContent = "D-" + diffDays;
+  else if(diffDays === 0) el.textContent = "D-DAY";
+  else el.textContent = "D+" + Math.abs(diffDays);
+  return cmpDate.toISOString().slice(0,10);
+}
+
+function isToday(dateStr, todayStr){ return dateStr === todayStr; }
+
+// ---------- 동기화 코드 관리 ----------
+const LOCAL_CODE_KEY = "adsp-sync-code-v1";
+let syncCode = null;
+let unsubscribeSnapshot = null;
+
+function generateCode(){
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // 헷갈리는 0/O, 1/I 제외
+  let out = "";
+  for(let i=0;i<6;i++) out += chars[Math.floor(Math.random()*chars.length)];
+  return out;
+}
+
+function getStoredCode(){
+  try{ return localStorage.getItem(LOCAL_CODE_KEY); }catch(e){ return null; }
+}
+function storeCode(code){
+  try{ localStorage.setItem(LOCAL_CODE_KEY, code); }catch(e){}
+}
+
+function setSyncBadge(mode, text){
+  const badge = document.getElementById('syncBadge');
+  badge.className = 'sync-badge ' + mode;
+  document.getElementById('syncBadgeText').textContent = text;
+}
+
+async function loadState(){
+  if(!firebaseReady || !syncCode){
+    checkState = {};
+    return;
+  }
+  try{
+    const ref = doc(db, "adsp_plans", syncCode);
+    const snap = await getDoc(ref);
+    checkState = snap.exists() && snap.data().checklist ? snap.data().checklist : {};
+    setSyncBadge('', '동기화됨 · ' + syncCode);
+  }catch(e){
+    console.error(e);
+    checkState = {};
+    setSyncBadge('offline', '연결 실패');
+  }
+}
+
+async function saveState(){
+  if(!firebaseReady || !syncCode){
+    setSyncBadge('nosync', '동기화 설정 필요');
+    return;
+  }
+  try{
+    const ref = doc(db, "adsp_plans", syncCode);
+    await setDoc(ref, { checklist: checkState, updatedAt: Date.now() }, { merge:true });
+    setSyncBadge('', '동기화됨 · ' + syncCode);
+  }catch(e){
+    console.error(e);
+    setSyncBadge('offline', '저장 실패 · 재시도');
+  }
+}
+
+function watchRemoteChanges(){
+  if(!firebaseReady || !syncCode) return;
+  if(unsubscribeSnapshot) unsubscribeSnapshot();
+  const ref = doc(db, "adsp_plans", syncCode);
+  unsubscribeSnapshot = onSnapshot(ref, (snap) => {
+    if(!snap.exists()) return;
+    const remote = snap.data().checklist || {};
+    if(JSON.stringify(remote) !== JSON.stringify(checkState)){
+      checkState = remote;
+      render();
+    }
+  }, (err) => {
+    console.error(err);
+    setSyncBadge('offline', '연결 끊김');
+  });
+}
+
+function updateScorePanel(){
+  const ids = allTaskIds();
+  const total = ids.length;
+  const done = ids.filter(id => checkState[id]).length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('scorePct').textContent = pct;
+  document.getElementById('scoreFill').style.width = pct + "%";
+  document.getElementById('doneCount').textContent = done;
+  document.getElementById('totalCount').textContent = total;
+}
+
+function updateDayCard(dayEl, day){
+  const total = day.tasks.length;
+  const done = day.tasks.filter((t,i) => checkState[day.date+"_"+i]).length;
+  dayEl.querySelector('.day-progress-mini').textContent = done + "/" + total;
+  dayEl.classList.toggle('done', done === total);
+}
+
+function render(){
+  const todayStr = computeDday();
+  const main = document.getElementById('mainContent');
+  main.innerHTML = '';
+
+  PLAN.forEach(week => {
+    const divider = document.createElement('div');
+    divider.className = 'week-divider';
+    divider.innerHTML = `<span class="week-tag mono">${week.week}</span><span class="week-title">${week.title}</span><span class="week-rule"></span>`;
+    main.appendChild(divider);
+
+    week.days.forEach(day => {
+      const card = document.createElement('div');
+      card.className = 'day-card' + (isToday(day.date, todayStr) ? '' : ' collapsed');
+      if(isToday(day.date, todayStr)) card.classList.add('today');
+
+      const head = document.createElement('div');
+      head.className = 'day-head';
+      head.innerHTML = `
+        <span class="chevron"></span>
+        <span class="day-date">${day.label}<span class="dow">(${day.dow})</span></span>
+        <span class="day-badge ${day.type === 'weekend' ? 'weekend' : ''}">${day.type === 'weekend' ? '주말 4h' : '평일 1h'}</span>
+        <span class="day-topic">${day.topic}</span>
+        ${isToday(day.date, todayStr) ? '<span class="today-flag">TODAY</span>' : ''}
+        <span class="day-progress-mini mono">0/${day.tasks.length}</span>
+      `;
+      head.addEventListener('click', () => {
+        card.classList.toggle('collapsed');
+      });
+
+      const body = document.createElement('div');
+      body.className = 'day-body';
+
+      day.tasks.forEach((taskText, i) => {
+        const id = day.date + "_" + i;
+        const row = document.createElement('div');
+        row.className = 'task-row' + (checkState[id] ? ' checked' : '');
+
+        const bubble = document.createElement('div');
+        bubble.className = 'omr-bubble' + (checkState[id] ? ' checked' : '');
+
+        const label = document.createElement('div');
+        label.className = 'task-label';
+        label.textContent = taskText;
+
+        const toggle = async () => {
+          checkState[id] = !checkState[id];
+          bubble.classList.toggle('checked', checkState[id]);
+          row.classList.toggle('checked', checkState[id]);
+          updateDayCard(card, day);
+          updateScorePanel();
+          await saveState();
+        };
+
+        bubble.addEventListener('click', toggle);
+        label.addEventListener('click', toggle);
+
+        row.appendChild(bubble);
+        row.appendChild(label);
+        body.appendChild(row);
+      });
+
+      card.appendChild(head);
+      card.appendChild(body);
+      main.appendChild(card);
+
+      updateDayCard(card, day);
+    });
+  });
+
+  // exam day card
+  const examDivider = document.createElement('div');
+  examDivider.className = 'week-divider';
+  examDivider.innerHTML = `<span class="week-tag mono" style="background:var(--pen-red)">D-DAY</span><span class="week-title">시험 당일</span><span class="week-rule"></span>`;
+  main.appendChild(examDivider);
+
+  const examCard = document.createElement('div');
+  examCard.className = 'day-card examday';
+  examCard.innerHTML = `<div class="serif">2026년 8월 8일(토) — ADsP 시험</div><span class="mono">아침에 오답노트만 가볍게 훑고, 새 내용은 보지 않기</span>`;
+  main.appendChild(examCard);
+
+  updateScorePanel();
+}
+
+document.getElementById('resetBtn').addEventListener('click', async () => {
+  if(confirm('모든 체크 표시를 초기화할까요? 되돌릴 수 없어요.')){
+    checkState = {};
+    await saveState();
+    render();
+  }
+});
+
+// ---------- 동기화 오버레이 UI ----------
+const overlay = document.getElementById('syncOverlay');
+const tabNew = document.getElementById('tabNew');
+const tabExisting = document.getElementById('tabExisting');
+const panelNew = document.getElementById('panelNew');
+const panelExisting = document.getElementById('panelExisting');
+const newCodeDisplay = document.getElementById('newCodeDisplay');
+
+function openOverlay(){
+  newCodeDisplay.textContent = generateCode();
+  overlay.classList.remove('hidden');
+}
+function closeOverlay(){ overlay.classList.add('hidden'); }
+
+tabNew.addEventListener('click', () => {
+  tabNew.classList.add('active'); tabExisting.classList.remove('active');
+  panelNew.classList.add('active'); panelExisting.classList.remove('active');
+});
+tabExisting.addEventListener('click', () => {
+  tabExisting.classList.add('active'); tabNew.classList.remove('active');
+  panelExisting.classList.add('active'); panelNew.classList.remove('active');
+});
+
+document.getElementById('confirmNewCode').addEventListener('click', async () => {
+  const code = newCodeDisplay.textContent;
+  syncCode = code;
+  storeCode(code);
+  closeOverlay();
+  setSyncBadge('', '연결 중…');
+  await loadState();
+  render();
+  watchRemoteChanges();
+});
+
+document.getElementById('confirmExistingCode').addEventListener('click', async () => {
+  const input = document.getElementById('existingCodeInput');
+  const code = input.value.trim().toUpperCase();
+  const msg = document.getElementById('existingStatusMsg');
+  if(!code){ msg.textContent = '코드를 입력해주세요.'; return; }
+  if(!firebaseReady){ msg.textContent = 'Firebase 설정이 필요해요 (firebaseConfig 확인).'; return; }
+  msg.textContent = '연결 중…';
+  try{
+    const ref = doc(db, "adsp_plans", code);
+    const snap = await getDoc(ref);
+    syncCode = code;
+    storeCode(code);
+    closeOverlay();
+    checkState = snap.exists() && snap.data().checklist ? snap.data().checklist : {};
+    setSyncBadge('', '동기화됨 · ' + code);
+    render();
+    watchRemoteChanges();
+  }catch(e){
+    console.error(e);
+    msg.textContent = '연결 실패, 코드를 다시 확인해주세요.';
+  }
+});
+
+document.getElementById('syncSkip').addEventListener('click', () => {
+  closeOverlay();
+  setSyncBadge('nosync', '동기화 안 함');
+});
+
+document.getElementById('syncBadge').addEventListener('click', openOverlay);
+
+(async function init(){
+  syncCode = getStoredCode();
+  if(syncCode && firebaseReady){
+    setSyncBadge('', '연결 중…');
+    await loadState();
+    render();
+    watchRemoteChanges();
+  }else{
+    render(); // 빈 상태로 우선 렌더
+    if(firebaseReady){
+      openOverlay();
+    }else{
+      setSyncBadge('nosync', 'Firebase 설정 필요');
+    }
+  }
+})();
+</script>
+
+</body>
+</html>
