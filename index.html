@@ -313,6 +313,41 @@
     display:block; text-align:center; font-size:11.5px; color:var(--graphite-soft);
     margin-top:14px; cursor:pointer; text-decoration:underline;
   }
+
+  /* ---------- NOTES CARD ---------- */
+  .notes-toggle{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; font-weight:600;
+    color:var(--lead-blue); background:var(--paper-alt); border:1px solid var(--lead-blue-soft);
+    padding:5px 10px; border-radius:3px; cursor:pointer; margin-top:4px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .notes-toggle:hover{ border-color:var(--lead-blue); }
+  .notes-toggle .arrow{ transition:transform 0.2s ease; display:inline-block; }
+  .notes-toggle.open .arrow{ transform:rotate(90deg); }
+  .notes-panel{
+    margin-top:10px; background:var(--paper-alt);
+    border:1px solid var(--card-border); border-left:3px solid var(--lead-blue);
+    border-radius:3px; padding:12px 14px;
+    max-height:0; overflow:hidden; opacity:0;
+    transition:max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+  }
+  .notes-panel.open{
+    max-height:2000px; opacity:1;
+  }
+  .notes-section-title{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; font-weight:700;
+    color:var(--graphite-soft); letter-spacing:0.08em; margin:10px 0 6px;
+  }
+  .notes-section-title:first-child{ margin-top:0; }
+  .notes-list{ margin:0; padding-left:18px; }
+  .notes-list li{ font-size:12.5px; line-height:1.6; margin-bottom:5px; color:var(--graphite); }
+  .formula-list{ margin:0; padding:0; list-style:none; }
+  .formula-list li{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; line-height:1.8;
+    color:var(--pen-red); background:#fff; border:1px dashed var(--omr-line);
+    padding:5px 9px; border-radius:3px; margin-bottom:5px;
+  }
 </style>
 </head>
 <body>
@@ -408,27 +443,104 @@ const PLAN = [
         "분산 · 표준편차 공식 (n vs n-1) 정리",
         "왜도 · 첨도, 이상치(IQR) 개념 정리",
         "기출 5문제 풀이"
-      ]},
+      ], notes:{
+        concepts:[
+          "평균은 이상치에 민감, 중앙값·최빈값은 영향 안 받음",
+          "범위(Range) = 최댓값 − 최솟값 (\"차이\"임에 주의)",
+          "왜도 방향: 평균이 끌려간 쪽이 꼬리 방향 (평균>중앙값→우측꼬리, 평균<중앙값→좌측꼬리)",
+          "IQR = \"중앙 50%\" 키워드와 매칭, 분산/표준편차와 구분",
+          "이상치 판단: 박스플롯(IQR 기반) vs Z-score(평균/표준편차 기반) 구분",
+          "변동계수(CV): 단위·평균이 다른 데이터 비교용, 평균이 0 근처면 사용 불안정"
+        ],
+        formulas:[
+          "표본분산  s² = Σ(x−x̄)² / (n−1)",
+          "표준편차  s = √s²",
+          "IQR = Q3 − Q1",
+          "이상치 상한 = Q3 + 1.5×IQR,  하한 = Q1 − 1.5×IQR",
+          "변동계수  CV = (s / x̄) × 100 (%)"
+        ]
+      }},
       { date:"2026-07-23", label:"7/23", dow:"목", type:"weekday", topic:"확률분포", tasks:[
         "정규분포 특징 정리",
         "t분포 · 카이제곱분포 · F분포 정리",
         "기출 5문제 풀이"
-      ]},
+      ], notes:{
+        concepts:[
+          "정규분포는 평균·표준편차 2개로 모양이 완전히 결정됨",
+          "68-95-99.7 규칙: 평균±1σ=68%, ±2σ=95%, ±3σ=99.7%",
+          "Z-score: 서로 다른 기준(단위·평균)을 표준편차 단위로 통일해서 비교",
+          "t분포: 소표본(n<30) + σ 모름 → 평균 검정",
+          "카이제곱분포: 분산 검정, 독립성·적합도 검정 (항상 0 이상)",
+          "F분포: 2개 이상 집단의 분산 비교 (ANOVA)",
+          "중심극한정리(CLT): n≥30이면 원본분포 모양과 무관하게 표본평균은 정규분포 근사",
+          "표준오차(SE): n이 커질수록 작아짐 → 표본평균이 더 안정적"
+        ],
+        formulas:[
+          "표준화  Z = (x − μ) / σ",
+          "표준오차  SE = σ / √n",
+          "95% 구간 ≈ 평균 ± 1.96×SE (근사적으로 ±2σ)"
+        ]
+      }},
       { date:"2026-07-24", label:"7/24", dow:"금", type:"weekday", topic:"표본추출 · 추정", tasks:[
         "표본추출 방법(단순/층화/군집) 정리",
         "점추정 vs 구간추정 개념 정리",
         "기출 5문제 풀이"
-      ]},
+      ], notes:{
+        concepts:[
+          "단순무작위추출: 모든 개체가 뽑힐 확률 동일",
+          "층화추출: 그룹(층)별로 비율대로 일부씩 추출",
+          "군집추출: 일부 군집을 통째로 선택해서 그 안을 전수조사",
+          "계통추출: 일정한 간격으로 추출 (예: 매 10번째)",
+          "점추정: 모수를 하나의 값으로 추정 / 구간추정: 범위로 추정",
+          "표본크기(n) ↑ → 신뢰구간 좁아짐 / 신뢰수준 ↑ → 신뢰구간 넓어짐 (반대 방향!)",
+          "\"95% 신뢰수준\" = 반복 추출 시 그중 약 95%가 모평균을 포함한다는 뜻 (이 구간이 95% 확률로 맞다는 뜻 아님)"
+        ],
+        formulas:[
+          "신뢰구간 = x̄ ± Z × (σ / √n)",
+          "95% 신뢰수준 → Z = 1.96",
+          "99% 신뢰수준 → Z = 2.58"
+        ]
+      }},
       { date:"2026-07-25", label:"7/25", dow:"토", type:"weekend", topic:"가설검정 + 상관·회귀 + 기출집중", tasks:[
         "가설검정(귀무/대립, 유의수준, p-value) 개념",
         "상관분석 · 단순/다중 회귀분석 개념",
         "기출문제 20~30문제 집중 풀이"
-      ]},
+      ], notes:{
+        concepts:[
+          "귀무가설(H0): \"차이/효과 없다\" 기본 전제 / 대립가설(H1): 증명하고 싶은 것",
+          "p-value < α(보통 0.05) → 귀무가설 기각 (대립가설 채택)",
+          "p-value ≥ α → \"기각 못함\"이 정확한 표현 (\"채택\"·\"증명됐다\" 아님!)",
+          "1종 오류: H0가 참인데 기각(억울한 판단) / 2종 오류: H0가 거짓인데 기각 못함(놓침)",
+          "양측검정: 방향 무관 차이만 확인 / 단측검정: 방향(증가·감소)까지 확인",
+          "상관계수 r: 방향은 부호(+/−), 강도는 절댓값(|r|)으로 판단",
+          "상관관계 ≠ 인과관계 (제3의 공통 원인일 수 있음)",
+          "R²: 모델의 설명력(0~1), 단순회귀에서는 R² = r²",
+          "다중회귀는 변수 추가 시 R² 항상 증가/유지 → Adjusted R²로 보정",
+          "다중공선성: 독립변수끼리 상관 높은 문제, VIF 10 이상이면 의심"
+        ],
+        formulas:[
+          "검정통계량  t = (x̄ − μ0) / (s/√n)",
+          "상관계수  r = Σ(x−x̄)(y−ȳ) / √[Σ(x−x̄)²Σ(y−ȳ)²]",
+          "단순회귀식  y = β0 + β1x + ε",
+          "결정계수(단순회귀)  R² = r²"
+        ]
+      }},
       { date:"2026-07-26", label:"7/26", dow:"일", type:"weekend", topic:"ANOVA·시계열 + 통계 총정리", tasks:[
         "분산분석(ANOVA), 시계열분석 기초 정리",
         "통계 전체 개념 총정리",
         "오답노트 작성 및 정리"
-      ]},
+      ], notes:{
+        concepts:[
+          "ANOVA: 3개 이상 집단의 평균이 같은지 검정 (분산의 비율을 이용해 평균을 비교)",
+          "집단 간 분산이 집단 내 분산보다 훨씬 크면 → 평균 차이가 유의미하다고 판단",
+          "ANOVA에서 유의미한 차이가 나오면, 어떤 집단끼리 다른지는 사후검정(Tukey 등)으로 추가 확인",
+          "시계열 4요소: 추세(trend) · 계절성(seasonality) · 순환(cycle) · 불규칙(irregular)",
+          "이동평균법·지수평활법: 시계열 데이터를 평활화해서 추세를 파악하는 기법"
+        ],
+        formulas:[
+          "F = (집단 간 평균제곱, MSB) / (집단 내 평균제곱, MSW)"
+        ]
+      }},
       { date:"2026-07-27", label:"7/27", dow:"월", type:"weekday", topic:"오답노트 재복습", tasks:[
         "오답노트 기반 취약 개념 다시 보기",
         "헷갈렸던 공식 손으로 다시 써보기"
@@ -444,26 +556,77 @@ const PLAN = [
       { date:"2026-07-29", label:"7/29", dow:"수", type:"weekday", topic:"데이터마이닝 개념 · CRISP-DM", tasks:[
         "데이터마이닝 정의 · 프로세스(CRISP-DM) 정리",
         "기출 5문제 풀이"
-      ]},
+      ], notes:{
+        concepts:[
+          "CRISP-DM 6단계: 업무 이해 → 데이터 이해 → 데이터 준비 → 모델링 → 평가 → 배포",
+          "지도학습: 정답(레이블)이 있는 데이터로 학습 → 분류, 회귀",
+          "비지도학습: 정답 없이 패턴을 찾음 → 군집분석, 연관분석, 차원축소(PCA)"
+        ],
+        formulas:[]
+      }},
       { date:"2026-07-30", label:"7/30", dow:"목", type:"weekday", topic:"분류분석 - 의사결정나무", tasks:[
         "의사결정나무 개념, 엔트로피 · 지니지수 정리",
         "기출 5문제 풀이"
-      ]},
+      ], notes:{
+        concepts:[
+          "의사결정나무: 불순도(섞여있는 정도)를 가장 많이 줄이는 방향으로 데이터를 분할",
+          "엔트로피·지니지수: 값이 낮을수록 한 그룹 안에 한 범주만 순수하게 모여있다는 뜻",
+          "가지치기(Pruning): 나무가 너무 복잡해지는(과적합) 것을 막기 위해 가지를 잘라냄"
+        ],
+        formulas:[
+          "엔트로피  Entropy = −Σ pᵢ log₂(pᵢ)",
+          "지니지수  Gini = 1 − Σ pᵢ²"
+        ]
+      }},
       { date:"2026-07-31", label:"7/31", dow:"금", type:"weekday", topic:"분류분석 - 로지스틱회귀 · 인공신경망", tasks:[
         "로지스틱회귀 개념 정리",
         "인공신경망 기본 구조 정리",
         "기출 5문제 풀이"
-      ]},
+      ], notes:{
+        concepts:[
+          "로지스틱회귀: 종속변수가 범주형(0/1)일 때 사용, 결과를 0~1 사이 확률로 출력",
+          "시그모이드 함수로 선형결합값을 확률로 변환",
+          "인공신경망: 입력층 → 은닉층 → 출력층 구조, 활성화 함수로 비선형성 부여",
+          "은닉층이 너무 많거나 학습을 오래 하면 과적합 위험 → 검증데이터로 점검 필요"
+        ],
+        formulas:[
+          "시그모이드  p = 1 / (1 + e^(−z)),  z = β0 + β1x"
+        ]
+      }},
       { date:"2026-08-01", label:"8/1", dow:"토", type:"weekend", topic:"앙상블 · kNN + 군집분석", tasks:[
         "앙상블(배깅/부스팅/랜덤포레스트) 개념",
         "나이브베이즈, kNN 개념",
         "군집분석(k-means, 계층적 군집) 개념 + 문제풀이"
-      ]},
+      ], notes:{
+        concepts:[
+          "배깅(Bagging): 여러 표본을 부트스트랩으로 뽑아 병렬로 여러 모델 학습 후 투표/평균 (예: 랜덤포레스트)",
+          "부스팅(Boosting): 이전 모델이 틀린 데이터에 가중치를 주며 순차적으로 모델을 개선",
+          "나이브베이즈: 각 특징이 서로 독립이라고 '순진하게' 가정하고 베이즈 정리로 확률 계산",
+          "kNN: 새로운 데이터와 가장 가까운 k개의 이웃을 찾아 다수결로 분류",
+          "k-means: 중심점을 반복적으로 갱신하며 군집을 나누는 방법, k(군집 수)를 미리 정해야 함",
+          "계층적 군집분석: 가까운 데이터끼리 순차적으로 묶어가며 덴드로그램(나무 그림)으로 표현"
+        ],
+        formulas:[
+          "유클리드 거리  d = √( Σ (xᵢ − yᵢ)² )"
+        ]
+      }},
       { date:"2026-08-02", label:"8/2", dow:"일", type:"weekend", topic:"연관분석 · PCA + 데이터마이닝 총정리", tasks:[
         "연관분석(지지도/신뢰도/향상도) 계산 연습",
         "주성분분석(PCA) 개념 정리",
         "데이터마이닝 전체 총정리 및 기출 집중 풀이"
-      ]},
+      ], notes:{
+        concepts:[
+          "지지도(Support): 전체 거래 중 A,B가 동시에 일어난 비율",
+          "신뢰도(Confidence): A를 산 사람들 중 B도 산 비율 (조건부확률, 분모는 A 구매 건수)",
+          "향상도(Lift): Lift=1 → 독립 / Lift>1 → 양의 연관 / Lift<1 → 음의 연관",
+          "PCA(주성분분석): 여러 변수를 서로 상관없는 소수의 주성분으로 압축(차원축소), 분산을 가장 많이 설명하는 방향부터 순서대로 추출"
+        ],
+        formulas:[
+          "지지도  Support(A→B) = P(A∩B) = (A,B 동시구매) / (전체 거래수)",
+          "신뢰도  Confidence(A→B) = P(A∩B) / P(A) = (A,B 동시구매) / (A 구매수)",
+          "향상도  Lift(A→B) = Confidence(A→B) / P(B)"
+        ]
+      }},
       { date:"2026-08-03", label:"8/3", dow:"월", type:"weekday", topic:"오답노트 재복습", tasks:[
         "오답노트 기반 취약 개념 다시 보기",
         "연관분석 계산 다시 연습"
@@ -483,7 +646,17 @@ const PLAN = [
       { date:"2026-08-06", label:"8/6", dow:"목", type:"weekday", topic:"1·2과목 속성 복습", tasks:[
         "데이터 이해(1과목) 핵심 개념 훑기",
         "데이터분석 기획(2과목) 핵심 개념 훑기"
-      ]},
+      ], notes:{
+        concepts:[
+          "빅데이터 3V: Volume(규모) · Velocity(속도) · Variety(다양성) (+Value·Veracity 언급되기도 함)",
+          "데이터 유형: 정형(DB테이블) · 반정형(XML,JSON,로그) · 비정형(텍스트,이미지,영상)",
+          "데이터베이스 특징: 통합/저장/공유/변화되는 데이터",
+          "분석 과제 정의 시 고려요소: 시급성 vs 난이도(우선순위 매트릭스로 판단)",
+          "분석 조직 구조: 집중형(전담조직) · 분산형(각 부서) · 기능형(기존 부서가 겸함)",
+          "분석 마스터플랜: ROI 관점(시급성·난이도)과 실행 용이성 기준으로 과제 우선순위 결정"
+        ],
+        formulas:[]
+      }},
       { date:"2026-08-07", label:"8/7", dow:"금", type:"weekday", topic:"최종 점검", tasks:[
         "전체 오답노트 최종 확인",
         "헷갈리는 용어 마지막 점검"
@@ -669,6 +842,53 @@ function render(){
         row.appendChild(label);
         body.appendChild(row);
       });
+
+      if(day.notes && ((day.notes.concepts && day.notes.concepts.length) || (day.notes.formulas && day.notes.formulas.length))){
+        const notesToggle = document.createElement('div');
+        notesToggle.className = 'notes-toggle';
+        notesToggle.innerHTML = '<span class="arrow">▶</span><span>핵심 개념 &amp; 공식 보기</span>';
+
+        const notesPanel = document.createElement('div');
+        notesPanel.className = 'notes-panel';
+
+        if(day.notes.concepts && day.notes.concepts.length){
+          const t1 = document.createElement('div');
+          t1.className = 'notes-section-title';
+          t1.textContent = '📌 핵심 개념';
+          const ul1 = document.createElement('ul');
+          ul1.className = 'notes-list';
+          day.notes.concepts.forEach(c => {
+            const li = document.createElement('li');
+            li.textContent = c;
+            ul1.appendChild(li);
+          });
+          notesPanel.appendChild(t1);
+          notesPanel.appendChild(ul1);
+        }
+
+        if(day.notes.formulas && day.notes.formulas.length){
+          const t2 = document.createElement('div');
+          t2.className = 'notes-section-title';
+          t2.textContent = '✏️ 공식';
+          const ul2 = document.createElement('ul');
+          ul2.className = 'formula-list';
+          day.notes.formulas.forEach(f => {
+            const li = document.createElement('li');
+            li.textContent = f;
+            ul2.appendChild(li);
+          });
+          notesPanel.appendChild(t2);
+          notesPanel.appendChild(ul2);
+        }
+
+        notesToggle.addEventListener('click', () => {
+          notesToggle.classList.toggle('open');
+          notesPanel.classList.toggle('open');
+        });
+
+        body.appendChild(notesToggle);
+        body.appendChild(notesPanel);
+      }
 
       card.appendChild(head);
       card.appendChild(body);
